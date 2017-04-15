@@ -1,9 +1,7 @@
-console.log('Hey guys and ladies!!');
 
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import ItemList from './components/itemList.js';
-import ItemStore from './store/itemStore.js';
+import App from './components/app.js';
 
-ReactDOM.render(<ItemList />, document.getElementById('root'));
+ReactDOM.render(<App />, document.getElementById('root'));
