@@ -43,6 +43,8 @@ export class ProductStore{
                  }, 0) 
               };
             });
+            
+            data = _.sortBy(data, 'price');
         }
         
         return data;
