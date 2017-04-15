@@ -1,3 +1,7 @@
 .form-group{
     padding-right: 1em;   
 }
+
+.form-group input{
+  max-width: 150px;  
+}

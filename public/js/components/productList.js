@@ -1,16 +1,27 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { observer } from "mobx-react"; 
 
 @observer
 export default class productList extends React.Component{
-    deleteProduct(e){
-        if(e.which === 13){
-            this.props.store.deleteItem(e.target.value);
-        }
+    deleteProduct(id){
+        
+        this.props.store.deleteItem(id);
     }
-    
+
     render(){
         
+        const {productList,categories} = this.props.store;
+        
+        const productTable = productList.map(product => (
+            <tr key={product.id}>
+              <td>{product.name}</td>
+              <td>{product.category}</td>
+              <td>{product.price}</td>
+              <td><span className="glyphicon glyphicon-trash" onClick={() => this.deleteProduct(product.id)}></span></td>
+          </tr>    
+        ));
+
         return <div className="row">
           <table className="table table-striped">
             <thead>
@@ -22,33 +33,9 @@ export default class productList extends React.Component{
                 </tr>
               </thead>
               <tbody>
-                  <tr>
-                      <td>Breads</td>
-                      <td>Food</td>
-                      <td>40</td>
-                      <td><span className="glyphicon glyphicon-trash"></span></td>
-                  </tr>
-                  <tr>
-                      <td>Breads</td>
-                      <td>Food</td>
-                      <td>40</td>
-                      <td><span className="glyphicon glyphicon-trash"></span></td>
-                  </tr>
-                  <tr>
-                      <td>Breads</td>
-                      <td>Food</td>
-                      <td>40</td>
-                      <td><span className="glyphicon glyphicon-trash"></span></td>
-                  </tr>
-                  <tr>
-                      <td>Breads</td>
-                      <td>Food</td>
-                      <td>40</td>
-                      <td><span className="glyphicon glyphicon-trash"></span></td>
-                  </tr>
+                  {productTable}
               </tbody>
           </table>
         </div>
-
     }
 }

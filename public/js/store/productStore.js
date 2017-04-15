@@ -1,23 +1,22 @@
 import {observable,computed} from 'mobx';
+import {_} from "underscore";
 
 class newItem{
-    @observable value;
     @observable id;
-    @observable complete;
+    @observable name;
+    @observable price;
+    @observable category;
     
-    constructor(value){
-        this.id = Date.now()
-        this.value = value
-        this.complete = false
+    constructor(product){
+        this.id = parseInt(Date.now()) + "_" + Math.random(20)
+        this.name = product.name
+        this.price = product.price
+        this.category = product.category
     }
 }
 
 export class ProductStore{
-    @observable list = [{
-        id : 909090,
-        value : "test",
-        complete : false
-    }];
+    @observable productList = [];
     @observable categories = [{
         id : Date.now() + Math.random(20),
         name : "Food"
@@ -28,18 +27,36 @@ export class ProductStore{
         id : Date.now() + Math.random(20),
         name : "Transport"
     }]
-    @observable filter = "";
-    @computed get filteredListItems(){
-        var matchesFilter = new RegExp(this.filter,"i");
-        return this.list.filter(item => !this.filter || matchesFilter.test(item) );
+    
+    @computed get filteredProductList(){
+        var groups = [];
+        
+        if(this.productList.length){
+            groups = _.groupBy(this.productList,  "category");
+            
+            var data = _.map(groups,function(g, key) {
+              return { 
+                 id: Date.now() + Math.random(20),
+                  name : key,
+                 price: _.reduce(g,function(m,x) { 
+                   return Number(m) + Number(x.price);
+                 }, 0) 
+              };
+            });
+        }
+        
+        return data;
     } 
      
-     deleteItem(e){
-         console.log("delete called");
+     deleteItem(id){
+         
+        this.productList = _.without(this.productList, _.findWhere(this.productList, {
+          id: id
+        }));
      }
     
-     createItem(value){
-          this.list.push( new newItem(value));
+     createItem(product){
+          this.productList.push( new newItem(product));
      }
 }
 
