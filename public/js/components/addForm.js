@@ -5,7 +5,7 @@ import { observer } from "mobx-react";
 
 @observer
 export default class addForm extends React.Component{
-    createNew(e){
+    createNew(){
         //get values 
         var product = {
             price : ReactDOM.findDOMNode(this.refs.price).value,
@@ -16,11 +16,7 @@ export default class addForm extends React.Component{
         //save value
         this.props.store.createItem(product);
 
-        //reset form 
-        ReactDOM.findDOMNode(this.refs.price).value = "";
-        ReactDOM.findDOMNode(this.refs.name).value = "";
-        ReactDOM.findDOMNode(this.refs.category).value = "";
-
+        this.resetForm();
     }
 
     constructor(props) {
@@ -28,13 +24,13 @@ export default class addForm extends React.Component{
 
         this.state = {
             name: '',
-            price: ''
+            price: '',
+            category : ''
         };
 
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
-
 
     handleChange(e) {
         e.target.classList.add('active');
@@ -46,23 +42,37 @@ export default class addForm extends React.Component{
         this.showInputError(e.target.name);
     }
 
-
     handleSubmit(e) {    
         e.preventDefault();
-
-        console.log('component state', JSON.stringify(this.state));
 
         if (!this.showFormErrors()) {
             console.log('form is invalid: do not submit');
         } else {
-            this.createNew.bind(this);
+            this.createNew();
             console.log('form is valid: submit');
         }
     }
-
+    
+    resetForm(){
+        
+        const inputs = document.querySelectorAll('input');
+        const selects = document.querySelectorAll('select');
+        
+        inputs.forEach(input => {
+            input.classList.remove('active');
+            input.value = "";
+        });
+        
+        selects.forEach(select => {
+            select.classList.remove('active');
+            select.value = "";
+        });
+    }
 
     showFormErrors() {
         const inputs = document.querySelectorAll('input');
+        const selects = document.querySelectorAll('select');
+        
         let isFormValid = true;
 
         inputs.forEach(input => {
@@ -74,14 +84,21 @@ export default class addForm extends React.Component{
                 isFormValid = false;
             }
         });
+        
+        selects.forEach(select => {
+            select.classList.add('active');
+
+            const isSelectValid = this.showInputError(select.name);
+
+            if (!isSelectValid) {
+                isFormValid = false;
+            }
+        });
 
         return isFormValid;
     }
 
     showInputError(refName) {
-        
-        console.log(refName);
-        
         
         const validity = this.refs[refName].validity;
         const label = document.getElementById(`${refName}Label`).textContent;
@@ -111,7 +128,7 @@ export default class addForm extends React.Component{
         return <div>
             <div className="row">
                 <h2>Product List</h2>
-                    <form className="form-inline" noValidate>
+                    <form className="form-inline" id="productForm" noValidate>
                         <div className="form-group">
                             <label className="sr-only" htmlFor="item" id="nameLabel">Product Name</label>
                                 <input name="name" className="form-control" id="item" placeholder="Product name" ref="name" onChange={ this.handleChange } required/>
@@ -119,16 +136,18 @@ export default class addForm extends React.Component{
                                         </div>
                                         <div className="form-group">
                                             <label className="sr-only" htmlFor="price" id="priceLabel">Price</label>
-                                                <input name="price" className="form-control" id="price" placeholder="Price" ref="price" pattern="[0-9]" onChange={ this.handleChange } required/>
+                                                <input name="price" className="form-control" id="price" placeholder="Price" ref="price" pattern="[0-9]{1,10}" onChange={ this.handleChange } required/>
                                                     <div className="error" id="priceError" />
                                                         </div>
                                                         <div className="form-group">
-                                                            <select className="form-control" ref="category">
+                                                            <label className="sr-only" htmlFor="category" id="categoryLabel">Category</label>
+                                                            <select name="category" id="category" className="form-control" ref="category" onChange={ this.handleChange } required>
                                                                 <option value="">Category</option>
                                                                 {catItems}
         </select>
+        <div className="error" id="categoryError" />
             </div>
-            <input type="button" className="btn btn-primary" onClick={this.handleSubmit} value="Add"/>
+            <button className="btn btn-primary" onClick={this.handleSubmit}>Add</button>
                 </form>
                 </div>
                 </div>

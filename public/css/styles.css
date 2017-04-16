@@ -15,6 +15,15 @@ input.active:invalid {
   box-shadow: 0 0 5px 1px red;
 }
 
+
+select.active:valid {
+  box-shadow: 0 0 5px 1px green;
+}
+
+select.active:invalid {
+  box-shadow: 0 0 5px 1px red;
+}
+
 .error {
   color: red;
   font-size: 12px;
