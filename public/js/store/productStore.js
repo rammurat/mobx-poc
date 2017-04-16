@@ -1,12 +1,14 @@
 import {observable,computed} from 'mobx';
 import {_} from "underscore";
 
-class newItem{
+class newProduct{
+    //observer each product
     @observable id;
     @observable name;
     @observable price;
     @observable category;
-    
+
+    //initialize product
     constructor(product){
         this.id = parseInt(Date.now()) + "_" + Math.random(20)
         this.name = product.name
@@ -16,6 +18,7 @@ class newItem{
 }
 
 export class ProductStore{
+    //observer product list and master categories
     @observable productList = [];
     @observable categories = [{
         id : Date.now() + Math.random(20),
@@ -27,39 +30,41 @@ export class ProductStore{
         id : Date.now() + Math.random(20),
         name : "Transport"
     }]
-    
+
+    //compute grouped product categories 
     @computed get filteredProductList(){
         var groups = [];
-        
+
         if(this.productList.length){
+            //group products
             groups = _.groupBy(this.productList,  "category");
-            
             var data = _.map(groups,function(g, key) {
-              return { 
-                 id: Date.now() + Math.random(20),
-                  name : key,
-                 price: _.reduce(g,function(m,x) { 
-                   return Number(m) + Number(x.price);
-                 }, 0) 
-              };
+                return { 
+                    id: Date.now() + Math.random(20),
+                    name : key,
+                    price: _.reduce(g,function(m,x) { 
+                        return Number(m) + Number(x.price);
+                    }, 0) 
+                };
             });
-            
             data = _.sortBy(data, 'price');
         }
-        
+
         return data;
     } 
-     
-     deleteItem(id){
-         
+
+    //delete product
+    deleteItem(id){
+        //find product from list and remove
         this.productList = _.without(this.productList, _.findWhere(this.productList, {
-          id: id
+            id: id
         }));
-     }
-    
-     createItem(product){
-          this.productList.push( new newItem(product));
-     }
+    }
+
+    //create item
+    createProduct(product){
+        this.productList.push( new newProduct(product));
+    }
 }
 
 export default new ProductStore;
